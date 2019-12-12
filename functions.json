@@ -143,31 +143,9 @@
   },
   "variables": {
     "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
-    "appInsightsName": "[concat(parameters('name'), '-ai')]"
+    "appInsightsName": "[concat(parameters('name'), '-ai')]",
+    "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
   },
-  "functions": [
-    {
-      "namespace": "azurefunctions",
-      "members": {
-        "managedIdentityId": {
-          "parameters": [
-            {
-              "name": "type",
-              "type": "string"
-            },
-            {
-              "name": "name",
-              "type": "string"
-            }
-          ],
-          "output": {
-            "type": "string",
-            "value": "[concat(resourceId(parameters('type'), parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
-          }
-        }
-      }
-    }
-  ],
   "resources": [
     {
       "type": "Microsoft.Web/sites",
@@ -346,7 +324,7 @@
     "msiPrincipalId": {
       "condition": "[parameters('useManagedIdentity')]",
       "type": "string",
-      "value": "[reference(azurefunctions.managedIdentityId('Microsoft.Web/sites', parameters('name'))).principalId]",
+      "value": "[reference(variables('managedIdentity'), '2018-02-01').principalId]",
       "metadata": {
         "comments": "Returns the Principal Identifier of the Managed Identity created for the Function App."
       }
