@@ -25,13 +25,41 @@
             "type": "object",
             "defaultValue": {
                 "keys": [
-                    "All"
+                    "Get",
+                    "List",
+                    "Update",
+                    "Create",
+                    "Import",
+                    "Delete",
+                    "Recover",
+                    "Backup",
+                    "Restore"
                 ],
                 "secrets": [
-                    "All"
+                    "Get",
+                    "List",
+                    "Set",
+                    "Delete",
+                    "Recover",
+                    "Backup",
+                    "Restore"
                 ],
                 "certificates": [
-                    "All"
+                    "Get",
+                    "List",
+                    "Update",
+                    "Create",
+                    "Import",
+                    "Delete",
+                    "Recover",
+                    "Backup",
+                    "Restore",
+                    "ManageContacts",
+                    "ManageIssuers",
+                    "GetIssuers",
+                    "ListIssuers",
+                    "SetIssuers",
+                    "DeleteIssuers"
                 ]
             },
             "metadata": {
