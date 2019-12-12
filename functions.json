@@ -305,7 +305,7 @@
       "condition": "[not(empty(parameters('keyVaultName')))]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "[concat(parameters('keyVaultName'), '-accesspolicies')]",
+      "name": "[concat(parameters('name'), '-accesspolicies')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
