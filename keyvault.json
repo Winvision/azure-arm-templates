@@ -95,7 +95,10 @@
                         "value": "[parameters('admins')]"
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
+            ]
         }
     ],
     "outputs": {

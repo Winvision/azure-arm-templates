@@ -199,7 +199,7 @@
         "clientAffinityEnabled": false
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', parameters('storageAccountName'))]",
+        "[parameters('storageAccountName')]",
         "[resourceId('Microsoft.Web/serverfarms', concat(parameters('hostingPlanName'), '-cs'))]",
         "[resourceId('Microsoft.Web/serverfarms', concat(parameters('hostingPlanName'), '-as'))]"
       ]
