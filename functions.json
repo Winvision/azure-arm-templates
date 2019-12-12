@@ -326,6 +326,14 @@
     }
   ],
   "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.KeyVault/sites', parameters('name'))]"
+    },
     "msiPrincipalId": {
       "condition": "[parameters('useManagedIdentity')]",
       "type": "string",
