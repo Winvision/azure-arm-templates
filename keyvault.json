@@ -38,6 +38,9 @@
             }
         }
     },
+    "variables": {
+        "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/"
+    },
     "resources": [
         {
             "type": "Microsoft.KeyVault/vaults",
@@ -72,33 +75,23 @@
             ]
         },
         {
-            "condition": "[greater(length(parameters('admins')), 0)]",
-            "type": "Microsoft.KeyVault/vaults/accessPolicies",
-            "name": "[concat(parameters('name'), '/add')]",
-            "apiVersion": "2016-10-01",
+            "condition": "[not(empty(parameters('admins')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "access-policies",
             "properties": {
                 "mode": "Incremental",
-                "accessPolicies": [
-                    {
-                        "tenantId": "[parameters('tenantId')]",
-                        "objectId": "[parameters('admins')[copyIndex()]]",
-                        "permissions": {
-                            "keys": [
-                                "All"
-                            ],
-                            "secrets": [
-                                "All"
-                            ],
-                            "certificates": [
-                                "All"
-                            ]
-                        }
+                "templateLink": {
+                    "uri": "[uri(variables('templateBaseUrl'), 'keyvault-accesspolicies.json')]"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[parameters('name')]"
+                    },
+                    "objectIds": {
+                        "value": "[parameters('admins')]"
                     }
-                ]
-            },
-            "copy": {
-                "name": "adminsCopy",
-                "count": "[length(parameters('admins'))]"
+                }
             },
             "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
