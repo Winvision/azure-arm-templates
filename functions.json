@@ -5,7 +5,7 @@
     "name": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 21,
+      "maxLength": 50,
       "metadata": {
         "description": "The name of the Function App."
       }
@@ -41,6 +41,7 @@
     "hostingPlanName": {
       "type": "string",
       "minLength": 3,
+      "maxLength": 50,
       "defaultValue": "[parameters('name')]",
       "metadata": {
         "description": "The name of the Hosting Plan."
@@ -120,7 +121,7 @@
     "storageAccountName": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 24,
+      "maxLength": 50,
       "defaultValue": "[parameters('name')]",
       "metadata": {
         "description": "The name of the Storage Account."
@@ -129,7 +130,7 @@
     "appInsightsName": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 24,
+      "maxLength": 50,
       "defaultValue": "[parameters('name')]",
       "metadata": {
         "description": "The name of the Application Insights."
@@ -158,9 +159,11 @@
   "variables": {
     "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
     "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
-    "consumptionHostingPlanName": "[concat(take(parameters('hostingPlanName'), 21), '-cs')]",
-    "appServiceHostingPlanName": "[concat(take(parameters('hostingPlanName'), 21), '-as')]",
-    "actualHostingPlanName": "[if(parameters('isConsumption'), variables('consumptionHostingPlanName'), variables('appServiceHostingPlanName'))]"
+    "consumptionHostingPlanName": "[concat(take(parameters('hostingPlanName'), 47), '-cs')]",
+    "appServiceHostingPlanName": "[concat(take(parameters('hostingPlanName'), 47), '-as')]",
+    "actualHostingPlanName": "[if(parameters('isConsumption'), variables('consumptionHostingPlanName'), variables('appServiceHostingPlanName'))]",
+    "storageAccountName": "[concat(take(parameters('storageAccountName'), 21), '-st')]",
+    "appInsightsName": "[concat(take(parameters('appInsightsName'), 47), '-ai')]"
   },
   "resources": [
     {
@@ -194,11 +197,11 @@
             },
             {
               "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value)]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value)]"
             },
             {
               "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value)]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value)]"
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
@@ -206,7 +209,7 @@
             },
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName'))).InstrumentationKey]"
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName'))).InstrumentationKey]"
             }
           ],
           "alwaysOn": "[parameters('isAlwaysOn')]"
@@ -215,15 +218,15 @@
         "clientAffinityEnabled": false
       },
       "dependsOn": [
-        "[parameters('storageAccountName')]",
+        "[resourceId('Microsoft.Resources/deployments', variables('storageAccountName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
-        "[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"
+        "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
       ]
     },
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "[parameters('storageAccountName')]",
+      "name": "[variables('storageAccountName')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -231,7 +234,7 @@
         },
         "parameters": {
           "name": {
-            "value": "[parameters('storageAccountName')]"
+            "value": "[variables('storageAccountName')]"
           },
           "storageAccountType": {
             "value": "[parameters('storageAccountType')]"
@@ -248,7 +251,7 @@
     {
       "type": "Microsoft.Insights/components",
       "apiVersion": "2015-05-01",
-      "name": "[parameters('appInsightsName')]",
+      "name": "[variables('appInsightsName')]",
       "location": "[parameters('location')]",
       "kind": "web",
       "properties": {
