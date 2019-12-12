@@ -4,6 +4,8 @@
   "parameters": {
     "name": {
       "type": "string",
+      "minLength": 3,
+      "maxLength": 21,
       "metadata": {
         "description": "The name of the Function App."
       }
@@ -38,7 +40,8 @@
     },
     "hostingPlanName": {
       "type": "string",
-      "defaultValue": "[concat(parameters('name'), '-hosting')]",
+      "minLength": 3,
+      "defaultValue": "[parameters('name')]",
       "metadata": {
         "description": "The name of the Hosting Plan."
       }
@@ -116,9 +119,20 @@
     },
     "storageAccountName": {
       "type": "string",
-      "defaultValue": "[concat(parameters('name'), '-storage')]",
+      "minLength": 3,
+      "maxLength": 24,
+      "defaultValue": "[parameters('name')]",
       "metadata": {
         "description": "The name of the Storage Account."
+      }
+    },
+    "appInsightsName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 24,
+      "defaultValue": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the Application Insights."
       }
     },
     "storageAccountType": {
@@ -143,8 +157,10 @@
   },
   "variables": {
     "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
-    "appInsightsName": "[concat(parameters('name'), '-ai')]",
-    "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
+    "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
+    "consumptionHostingPlanName": "[concat(take(parameters('hostingPlanName'), 21), '-cs')]",
+    "appServiceHostingPlanName": "[concat(take(parameters('hostingPlanName'), 21), '-as')]",
+    "actualHostingPlanName": "[if(parameters('isConsumption'), variables('consumptionHostingPlanName'), variables('appServiceHostingPlanName'))]"
   },
   "resources": [
     {
@@ -190,19 +206,18 @@
             },
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName'))).InstrumentationKey]"
+              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName'))).InstrumentationKey]"
             }
           ],
           "alwaysOn": "[parameters('isAlwaysOn')]"
         },
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', concat(parameters('hostingPlanName'), if(parameters('isConsumption'), '-cs', '-as')))]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
         "clientAffinityEnabled": false
       },
       "dependsOn": [
         "[parameters('storageAccountName')]",
-        "[resourceId('Microsoft.Web/serverfarms', concat(parameters('hostingPlanName'), '-cs'))]",
-        "[resourceId('Microsoft.Web/serverfarms', concat(parameters('hostingPlanName'), '-as'))]",
-        "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+        "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
+        "[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"
       ]
     },
     {
@@ -233,7 +248,7 @@
     {
       "type": "Microsoft.Insights/components",
       "apiVersion": "2015-05-01",
-      "name": "[variables('appInsightsName')]",
+      "name": "[parameters('appInsightsName')]",
       "location": "[parameters('location')]",
       "kind": "web",
       "properties": {
@@ -245,7 +260,7 @@
       "condition": "[parameters('isConsumption')]",
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
-      "name": "[concat(parameters('hostingPlanName'), '-cs')]",
+      "name": "[variables('consumptionHostingPlanName')]",
       "location": "[parameters('location')]",
       "properties": {
         "name": "[parameters('hostingPlanName')]",
@@ -260,7 +275,7 @@
       "condition": "[not(parameters('isConsumption'))]",
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
-      "name": "[concat(parameters('hostingPlanName'), '-as')]",
+      "name": "[variables('appServiceHostingPlanName')]",
       "location": "[parameters('location')]",
       "properties": {
         "name": "[parameters('hostingPlanName')]",
