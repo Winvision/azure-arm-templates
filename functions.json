@@ -162,7 +162,7 @@
     "consumptionHostingPlanName": "[concat(take(parameters('hostingPlanName'), 47), '-cs')]",
     "appServiceHostingPlanName": "[concat(take(parameters('hostingPlanName'), 47), '-as')]",
     "actualHostingPlanName": "[if(parameters('isConsumption'), variables('consumptionHostingPlanName'), variables('appServiceHostingPlanName'))]",
-    "storageAccountName": "[concat(take(parameters('storageAccountName'), 21), '-st')]",
+    "storageAccountName": "[concat(take(replace(parameters('storageAccountName'), '-', ''), 22), 'st')]",
     "appInsightsName": "[concat(take(parameters('appInsightsName'), 47), '-ai')]"
   },
   "resources": [
