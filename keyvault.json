@@ -31,6 +31,7 @@
         },
         "admins": {
             "type": "array",
+            "defaultValue": null,
             "metadata": {
                 "description": "An array of object identifiers that specify which users get Administrator permissions on this Key Vault."
             }
@@ -54,7 +55,6 @@
             }
         },
         {
-            "condition": "[not(empty(parameters('secrets')))]",
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2016-10-01",
             "name": "[concat(parameters('name'), '/', parameters('secrets').secrets[copyIndex()].name)]",
@@ -73,8 +73,7 @@
         {
             "condition": "[not(empty(parameters('admins')))]",
             "type": "Microsoft.KeyVault/vaults/accessPolicies",
-            // "name": "[concat(parameters('name'), '/add')]",
-            "name": "add",
+            "name": "[concat(parameters('name'), '/add')]",
             "apiVersion": "2016-10-01",
             "properties": {
                 "mode": "Incremental",
