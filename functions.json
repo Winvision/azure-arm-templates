@@ -343,7 +343,7 @@
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.KeyVault/sites', parameters('name'))]"
+      "value": "[resourceId('Microsoft.Web/sites', parameters('name'))]"
     },
     "msiPrincipalId": {
       "condition": "[parameters('useManagedIdentity')]",
