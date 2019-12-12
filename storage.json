@@ -48,13 +48,12 @@
             "properties": {
                 "supportsHttpsTrafficOnly": true,
                 "encryption": {
-                    "condition": "[parameters('encryptStorage')]",
                     "services": {
                         "blob": {
-                            "enabled": true
+                            "enabled": "[parameters('encryptStorage')]"
                         },
                         "file": {
-                            "enabled": true
+                            "enabled": "[parameters('encryptStorage')]"
                         }
                     },
                     "keySource": "Microsoft.Storage"
