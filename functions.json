@@ -74,7 +74,7 @@
     },
     "hostingPlanWorkerCount": {
       "type": "string",
-      "defaultValue": 1,
+      "defaultValue": "1",
       "metadata": {
         "description": "The number of workers for the Hosting Plan."
       }
