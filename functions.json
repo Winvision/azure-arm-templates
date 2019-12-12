@@ -277,40 +277,40 @@
         "Tier": "[parameters('hostingPlanSkuTier')]",
         "Name": "[parameters('hostingPlanSku')]"
       }
-    },
-    {
-      "condition": "[not(empty(parameters('keyVaultName')))]",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2018-05-01",
-      "name": "[concat(parameters('name'), '-accesspolicies')]",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('templateBaseUrl'), 'keyvault-accesspolicies.json')]"
-        },
-        "parameters": {
-          "keyVaultName": {
-            "value": "[parameters('keyVaultName')]"
-          },
-          "tenantId": {
-            "value": "[parameters('tenantId')]"
-          },
-          "objectIds": {
-            "value": [
-              "[reference(variables('managedIdentity'), '2018-02-01').principalId]"
-            ]
-          },
-          "permissions": {
-            "secrets": [
-              "get"
-            ]
-          }
-        }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
-      ]
     }
+    // {
+    //   "condition": "[not(empty(parameters('keyVaultName')))]",
+    //   "type": "Microsoft.Resources/deployments",
+    //   "apiVersion": "2018-05-01",
+    //   "name": "[concat(parameters('name'), '-accesspolicies')]",
+    //   "properties": {
+    //     "mode": "Incremental",
+    //     "templateLink": {
+    //       "uri": "[uri(variables('templateBaseUrl'), 'keyvault-accesspolicies.json')]"
+    //     },
+    //     "parameters": {
+    //       "keyVaultName": {
+    //         "value": "[parameters('keyVaultName')]"
+    //       },
+    //       "tenantId": {
+    //         "value": "[parameters('tenantId')]"
+    //       },
+    //       "objectIds": {
+    //         "value": [
+    //           "[reference(variables('managedIdentity'), '2018-02-01').principalId]"
+    //         ]
+    //       },
+    //       "permissions": {
+    //         "secrets": [
+    //           "get"
+    //         ]
+    //       }
+    //     }
+    //   },
+    //   "dependsOn": [
+    //     "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+    //   ]
+    // }
   ],
   "outputs": {
     "name": {
