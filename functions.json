@@ -235,9 +235,9 @@
       "name": "[variables('appInsightsName')]",
       "location": "[parameters('location')]",
       "kind": "web",
-      "tags": {
-        "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('name')))]": "Resource"
-      },
+      // "tags": {
+      //   "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('name')))]": "Resource"
+      // },
       "properties": {
         "Application_Type": "web",
         "ApplicationId": "[parameters('name')]"
