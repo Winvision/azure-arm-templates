@@ -331,7 +331,6 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
         "[resourceId('Microsoft.Web/sites', parameters('name'))]"
       ]
     }

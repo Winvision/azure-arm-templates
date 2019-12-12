@@ -57,7 +57,10 @@
             "copy": {
                 "name": "policiesCopy",
                 "count": "[length(parameters('objectIds'))]"
-            }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ]
         }
     ]
 }
