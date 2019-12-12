@@ -312,7 +312,7 @@
           },
           "objectIds": {
             "value": [
-              "[reference(variables('managedIdentity'), '2018-02-01').principalId]"
+              "[reference(variables('managedIdentity'), '2018-11-30').principalId]"
             ]
           },
           "permissions": {
@@ -339,7 +339,7 @@
     "msiPrincipalId": {
       "condition": "[parameters('useManagedIdentity')]",
       "type": "string",
-      "value": "[reference(variables('managedIdentity'), '2018-02-01').principalId]",
+      "value": "[reference(variables('managedIdentity'), '2018-11-30').principalId]",
       "metadata": {
         "comments": "Returns the Principal Identifier of the Managed Identity created for the Function App."
       }
