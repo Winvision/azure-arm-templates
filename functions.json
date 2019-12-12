@@ -176,8 +176,7 @@
       "kind": "functionapp",
       "location": "[parameters('location')]",
       "identity": {
-        "condition": "[parameters('useManagedIdentity')]",
-        "type": "SystemAssigned"
+        "type": "[if(parameters('useManagedIdentity'), 'SystemAssigned', 'None')]"
       },
       "properties": {
         "name": "[parameters('name')]",
@@ -196,7 +195,6 @@
               "value": "[parameters('timezone')]"
             },
             {
-              "condition": "[not(empty(parameters('keyVaultName')))]",
               "name": "KeyVaultName",
               "value": "[parameters('keyVaultName')]"
             },
