@@ -31,7 +31,7 @@
         },
         "admins": {
             "type": "array",
-            "defaultValue": null,
+            "defaultValue": [],
             "metadata": {
                 "description": "An array of object identifiers that specify which users get Administrator permissions on this Key Vault."
             }
