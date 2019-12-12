@@ -198,12 +198,12 @@
             {
               "name": "AzureWebJobsStorage",
               // "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(reference('storage', '2018-11-01', 'Full').resourceId, '2018-11-01').keys[0].value)]"
-              "value": "NOT-SET-6"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', reference('storage').outputs.accessKey)]"
             },
             {
               "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
               // "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(reference('storage', '2018-11-01', 'Full').resourceId, '2018-11-01').keys[0].value)]"
-              "value": "NOT-SET-7"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', reference('storage').outputs.accessKey)]"
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
