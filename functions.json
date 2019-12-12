@@ -218,7 +218,7 @@
         "clientAffinityEnabled": false
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', variables('storageAccountName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
         "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
       ]
@@ -266,7 +266,7 @@
       "name": "[variables('consumptionHostingPlanName')]",
       "location": "[parameters('location')]",
       "properties": {
-        "name": "[parameters('hostingPlanName')]",
+        "name": "[variables('consumptionHostingPlanName')]",
         "computeMode": "Dynamic"
       },
       "sku": {
@@ -281,7 +281,7 @@
       "name": "[variables('appServiceHostingPlanName')]",
       "location": "[parameters('location')]",
       "properties": {
-        "name": "[parameters('hostingPlanName')]",
+        "name": "[variables('appServiceHostingPlanName')]",
         "workerSize": "[parameters('hostingPlanWorkerSize')]",
         "workerSizeId": "[parameters('hostingPlanWorkerSize')]",
         "numberOfWorkers": "[parameters('hostingPlanWorkerCount')]"
