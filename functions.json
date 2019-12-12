@@ -2,14 +2,14 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "functionName": {
+    "name": {
       "type": "string",
       "defaultValue": "[concat(resourceGroup().name, '-function')]",
       "metadata": {
         "description": "The name of the Function App."
       }
     },
-    "functionRuntime": {
+    "runtime": {
       "type": "string",
       "defaultValue": "dotnet",
       "allowedValues": [
@@ -23,14 +23,14 @@
         "description": "The runtime for the Function App."
       }
     },
-    "functionIsConsumption": {
+    "isConsumption": {
       "type": "bool",
       "defaultValue": true,
       "metadata": {
         "description": "Whether to use Consumption plan for the Function App."
       }
     },
-    "functionIsAlwaysOn": {
+    "isAlwaysOn": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
@@ -39,7 +39,7 @@
     },
     "hostingPlanName": {
       "type": "string",
-      "defaultValue": "[concat(parameters('functionName'), '-hosting')]",
+      "defaultValue": "[concat(parameters('name'), '-hosting')]",
       "metadata": {
         "description": "The name of the Hosting Plan."
       }
@@ -87,6 +87,13 @@
         "description": "Location for the resources."
       }
     },
+    "tenantId": {
+      "type": "string",
+      "defaultValue": "[subscription().tenantId]",
+      "metadata": {
+        "description": "The tenant identifier of the subscription."
+      }
+    },
     "timezone": {
       "type": "string",
       "defaultValue": "W. Europe Standard Time",
@@ -109,7 +116,7 @@
     },
     "storageAccountName": {
       "type": "string",
-      "defaultValue": "[concat(parameters('functionName'), '-storage')]",
+      "defaultValue": "[concat(parameters('name'), '-storage')]",
       "metadata": {
         "description": "The name of the Storage Account."
       }
@@ -135,7 +142,8 @@
     }
   },
   "variables": {
-    "appInsightsName": "[concat(parameters('functionName'), '-ai')]"
+    "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
+    "appInsightsName": "[concat(parameters('name'), '-ai')]"
   },
   "functions": [
     {
@@ -164,7 +172,7 @@
     {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-02-01",
-      "name": "[parameters('functionName')]",
+      "name": "[parameters('name')]",
       "kind": "functionapp",
       "location": "[parameters('location')]",
       "identity": {
@@ -172,12 +180,12 @@
         "type": "SystemAssigned"
       },
       "properties": {
-        "name": "[parameters('functionName')]",
+        "name": "[parameters('name')]",
         "siteConfig": {
           "appSettings": [
             {
               "name": "FUNCTIONS_WORKER_RUNTIME",
-              "value": "[parameters('functionRuntime')]"
+              "value": "[parameters('runtime')]"
             },
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -202,20 +210,20 @@
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
-              "value": "[parameters('functionName')]"
+              "value": "[parameters('name')]"
             },
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
               "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName'))).InstrumentationKey]"
             }
           ],
-          "alwaysOn": "[parameters('functionIsAlwaysOn')]"
+          "alwaysOn": "[parameters('isAlwaysOn')]"
         },
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
         "clientAffinityEnabled": false
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "[resourceId('Microsoft.Resources/deployments', parameters('storageAccountName'))]",
         "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
       ]
     },
@@ -226,7 +234,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/storage.json"
+          "uri": "[uri(variables('templateBaseUrl'), 'storage.json')]"
         },
         "parameters": {
           "name": {
@@ -251,18 +259,18 @@
       "location": "[parameters('location')]",
       "kind": "web",
       "tags": {
-        "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('functionName')))]": "Resource"
+        "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('name')))]": "Resource"
       },
       "properties": {
         "Application_Type": "web",
-        "ApplicationId": "[parameters('functionName')]"
+        "ApplicationId": "[parameters('name')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', parameters('functionName'))]"
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
       ]
     },
     {
-      "condition": "[parameters('functionIsConsumption')]",
+      "condition": "[parameters('isConsumption')]",
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
       "name": "[parameters('hostingPlanName')]",
@@ -277,7 +285,7 @@
       }
     },
     {
-      "condition": "[not(parameters('functionIsConsumption'))]",
+      "condition": "[not(parameters('isConsumption'))]",
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
       "name": "[parameters('hostingPlanName')]",
@@ -292,13 +300,36 @@
         "Tier": "[parameters('hostingPlanSkuTier')]",
         "Name": "[parameters('hostingPlanSku')]"
       }
+    },
+    {
+      "condition": "[not(empty(parameters('keyVaultName')))]",
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "name": "[concat(parameters('keyVaultName'), '/add')]",
+      "apiVersion": "2016-10-01",
+      "properties": {
+        "mode": "Incremental",
+        "accessPolicies": [
+          {
+            "tenantId": "[parameters('tenantId')]",
+            "objectId": "[reference(azurefunctions.managedIdentityId('Microsoft.Web/sites', parameters('name'))).principalId]",
+            "permissions": {
+              "secrets": [
+                "get"
+              ]
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+      ]
     }
   ],
   "outputs": {
     "msiPrincipalId": {
       "condition": "[parameters('useManagedIdentity')]",
       "type": "string",
-      "value": "[reference(azurefunctions.managedIdentityId('Microsoft.Web/sites', parameters('functionName'))).principalId]",
+      "value": "[reference(azurefunctions.managedIdentityId('Microsoft.Web/sites', parameters('name'))).principalId]",
       "metadata": {
         "comments": "Returns the Principal Identifier of the Managed Identity created for the Function App."
       }
