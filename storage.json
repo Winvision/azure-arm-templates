@@ -65,7 +65,7 @@
     ],
     "outputs": {
         "accessKey": {
-            "type": "securestring",
+            "type": "string",
             "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), '2018-11-01').keys[0].value]"
         }
     }
