@@ -201,7 +201,8 @@
       "dependsOn": [
         "[parameters('storageAccountName')]",
         "[resourceId('Microsoft.Web/serverfarms', concat(parameters('hostingPlanName'), '-cs'))]",
-        "[resourceId('Microsoft.Web/serverfarms', concat(parameters('hostingPlanName'), '-as'))]"
+        "[resourceId('Microsoft.Web/serverfarms', concat(parameters('hostingPlanName'), '-as'))]",
+        "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
       ]
     },
     {
@@ -235,16 +236,10 @@
       "name": "[variables('appInsightsName')]",
       "location": "[parameters('location')]",
       "kind": "web",
-      // "tags": {
-      //   "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('name')))]": "Resource"
-      // },
       "properties": {
         "Application_Type": "web",
         "ApplicationId": "[parameters('name')]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
-      ]
+      }
     },
     {
       "condition": "[parameters('isConsumption')]",
@@ -277,40 +272,40 @@
         "Tier": "[parameters('hostingPlanSkuTier')]",
         "Name": "[parameters('hostingPlanSku')]"
       }
+    },
+    {
+      "condition": "[not(empty(parameters('keyVaultName')))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[concat(parameters('name'), '-accesspolicies')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('templateBaseUrl'), 'keyvault-accesspolicies.json')]"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('keyVaultName')]"
+          },
+          "tenantId": {
+            "value": "[parameters('tenantId')]"
+          },
+          "objectIds": {
+            "value": [
+              "[reference(variables('managedIdentity'), '2018-02-01').principalId]"
+            ]
+          },
+          "permissions": {
+            "secrets": [
+              "get"
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+      ]
     }
-    // {
-    //   "condition": "[not(empty(parameters('keyVaultName')))]",
-    //   "type": "Microsoft.Resources/deployments",
-    //   "apiVersion": "2018-05-01",
-    //   "name": "[concat(parameters('name'), '-accesspolicies')]",
-    //   "properties": {
-    //     "mode": "Incremental",
-    //     "templateLink": {
-    //       "uri": "[uri(variables('templateBaseUrl'), 'keyvault-accesspolicies.json')]"
-    //     },
-    //     "parameters": {
-    //       "keyVaultName": {
-    //         "value": "[parameters('keyVaultName')]"
-    //       },
-    //       "tenantId": {
-    //         "value": "[parameters('tenantId')]"
-    //       },
-    //       "objectIds": {
-    //         "value": [
-    //           "[reference(variables('managedIdentity'), '2018-02-01').principalId]"
-    //         ]
-    //       },
-    //       "permissions": {
-    //         "secrets": [
-    //           "get"
-    //         ]
-    //       }
-    //     }
-    //   },
-    //   "dependsOn": [
-    //     "[resourceId('Microsoft.Web/sites', parameters('name'))]"
-    //   ]
-    // }
   ],
   "outputs": {
     "name": {
