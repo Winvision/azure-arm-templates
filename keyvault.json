@@ -68,7 +68,7 @@
             "name": "[concat(parameters('name'), '/', parameters('secrets').secrets[copyIndex()].name)]",
             "properties": {
                 "contentType": "text/plain",
-                "value": "[concat(parameters('name'), '/', parameters('secrets').secrets[copyIndex()].value)]"
+                "value": "[parameters('secrets').secrets[copyIndex()].value]"
             },
             "copy": {
                 "name": "secretsCopy",
