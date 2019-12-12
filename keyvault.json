@@ -88,6 +88,9 @@
                     "keyVaultName": {
                         "value": "[parameters('name')]"
                     },
+                    "tenantId": {
+                        "value": "[parameters('tenantId')]"
+                    },
                     "objectIds": {
                         "value": "[parameters('admins')]"
                     }

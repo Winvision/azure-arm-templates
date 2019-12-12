@@ -303,24 +303,35 @@
     },
     {
       "condition": "[not(empty(parameters('keyVaultName')))]",
-      "type": "Microsoft.KeyVault/vaults/accessPolicies",
-      "name": "[concat(parameters('keyVaultName'), '/add')]",
-      "apiVersion": "2016-10-01",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[concat(parameters('keyVaultName'), '-accesspolicies')]",
       "properties": {
         "mode": "Incremental",
-        "accessPolicies": [
-          {
-            "tenantId": "[parameters('tenantId')]",
-            "objectId": "[reference(azurefunctions.managedIdentityId('Microsoft.Web/sites', parameters('name'))).principalId]",
-            "permissions": {
-              "secrets": [
-                "get"
-              ]
-            }
+        "templateLink": {
+          "uri": "[uri(variables('templateBaseUrl'), 'keyvault-accesspolicies.json')]"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('keyVaultName')]"
+          },
+          "tenantId": {
+            "value": "[parameters('tenantId')]"
+          },
+          "objectIds": {
+            "value": [
+              "[reference(azurefunctions.managedIdentityId('Microsoft.Web/sites', parameters('name'))).principalId]"
+            ]
+          },
+          "permissions": {
+            "secrets": [
+              "get"
+            ]
           }
-        ]
+        }
       },
       "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
         "[resourceId('Microsoft.Web/sites', parameters('name'))]"
       ]
     }
