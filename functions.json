@@ -102,7 +102,7 @@
     },
     "keyVaultName": {
       "type": "string",
-      "defaultValue": null,
+      "defaultValue": "",
       "metadata": {
         "description": "The name of the keyvault the Function App should connect to, leave empty if none."
       }
