@@ -197,11 +197,11 @@
             },
             {
               "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value)]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(reference('storage').resourceId, '2019-06-01').keys[0].value)]"
             },
             {
               "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value)]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(reference('storage').resourceId, '2019-06-01').keys[0].value)]"
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
@@ -218,7 +218,7 @@
         "clientAffinityEnabled": false
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+        "storage",
         "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
         "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
       ]
@@ -226,7 +226,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "[variables('storageAccountName')]",
+      "name": "storage",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -295,7 +295,7 @@
       "condition": "[not(empty(parameters('keyVaultName')))]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "[concat(parameters('name'), '-accesspolicies')]",
+      "name": "accesspolicies",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
