@@ -316,7 +316,8 @@
           "permissions": {
             "value": {
               "secrets": [
-                "get"
+                "get",
+				"list"
               ]
             }
           }
