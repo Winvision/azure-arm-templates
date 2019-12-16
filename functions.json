@@ -212,6 +212,10 @@
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
               "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName'))).InstrumentationKey]"
+            },
+            {
+              "name": "AzureWebJobsFeatureFlags",
+              "value": "EnableActionResultHandling"
             }
           ],
           "alwaysOn": "[parameters('isAlwaysOn')]"
