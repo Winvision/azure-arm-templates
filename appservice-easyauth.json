@@ -13,14 +13,14 @@
             "maxLength": 36,
             "type": "string",
             "metadata": {
-                "description": "The client identifier of the application resource to use for Easy Auth."
+                "description": "The client identifier of the application registration to use for Easy Auth."
             }
         },
         "tenantId": {
             "type": "string",
             "defaultValue": "[subscription().tenantId]",
             "metadata": {
-                "description": "The identifier of the tenant where the application resource lives."
+                "description": "The identifier of the tenant where the application registration lives."
             }
         },
         "allowAnonymous": {
