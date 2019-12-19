@@ -13,6 +13,13 @@
             "metadata": {
                 "description": "The application settings to add to this App Service."
             }
+        },
+        "additionalAppSettings": {
+            "type": "object",
+            "defaultValue": [],
+            "metadata": {
+                "description": "Additional application settings to add to this App Service."
+            }
         }
     },
     "resources": [
@@ -20,7 +27,7 @@
             "type": "Microsoft.Web/sites/config",
             "apiVersion": "2018-11-01",
             "name": "[concat(parameters('appserviceName'), '/appsettings')]",
-            "properties": "[parameters('appSettings')]"
+            "properties": "[union(parameters('appSettings'), parameters('additionalAppSettings'))]"
         }
     ]
 }
