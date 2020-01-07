@@ -160,6 +160,15 @@
       "metadata": {
         "description": "Additional application settings to add to this App Service."
       }
+    },
+    "functionVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10,
+      "defaultValue": "~2",
+      "metadata": {
+        "description": "Function version for the function app (defaults to v2)."
+      }
     }
   },
   "variables": {
@@ -213,7 +222,7 @@
           "appSettings": {
             "value": {
               "FUNCTIONS_WORKER_RUNTIME": "[parameters('runtime')]",
-              "FUNCTIONS_EXTENSION_VERSION": "~2",
+              "FUNCTIONS_EXTENSION_VERSION": "[parameters('functionVersion')]",
               "WEBSITE_TIME_ZONE": "[parameters('timezone')]",
               "KeyVaultName": "[parameters('keyVaultName')]",
               "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', reference('storage').outputs.accessKey.value)]",
