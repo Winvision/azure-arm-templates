@@ -208,12 +208,13 @@
         "siteConfig": {
           "alwaysOn": "[parameters('isAlwaysOn')]"
         },
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
+        "serverFarmId": "[reference(variables('actualHostingPlanName'), '2018-02-01')]",
         "clientAffinityEnabled": false
       },
       "dependsOn": [
         "storage",
-        "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
+        "[variables('consumptionHostingPlanName')]",
+        "[variables('appServiceHostingPlanName')]",
         "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
       ]
     },
