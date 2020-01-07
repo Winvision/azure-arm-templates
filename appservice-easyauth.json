@@ -1,0 +1,55 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appserviceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service to add Easy Auth to."
+            }
+        },
+        "clientId": {
+            "minLength": 36,
+            "maxLength": 36,
+            "type": "string",
+            "metadata": {
+                "description": "The client identifier of the application registration to use for Easy Auth."
+            }
+        },
+        "tenantId": {
+            "type": "string",
+            "defaultValue": "[subscription().tenantId]",
+            "metadata": {
+                "description": "The identifier of the tenant where the application registration lives."
+            }
+        },
+        "allowAnonymous": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Whether to allow anonymous access to this App Service."
+            }
+        },
+        "loginProvider": {
+            "type": "string",
+            "defaultValue": "AzureActiveDirectory",
+            "metadata": {
+                "description": "The default login provider to use when anonymous access is not allowed."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('appserviceName'), '/authsettings')]",
+            "properties": {
+                "enabled": true,
+                "unauthenticatedClientAction": "[if(parameters('allowAnonymous'), 'AllowAnonymous', 'RedirectToLoginPage')]",
+                "defaultProvider": "[parameters('loginProvider')]",
+                "clientId": "[parameters('clientId')]",
+                "issuer": "[concat('https://sts.windows.net/', parameters('tenantId'), '/')]"
+            }
+        }
+    ]
+}

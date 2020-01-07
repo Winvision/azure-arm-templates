@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appserviceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service to add application settings to."
+            }
+        },
+        "appSettings": {
+            "type": "object",
+            "metadata": {
+                "description": "The application settings to add to this App Service."
+            }
+        },
+        "additionalAppSettings": {
+            "type": "object",
+            "defaultValue": [],
+            "metadata": {
+                "description": "Additional application settings to add to this App Service."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('appserviceName'), '/appsettings')]",
+            "properties": "[union(parameters('appSettings'), parameters('additionalAppSettings'))]"
+        }
+    ]
+}

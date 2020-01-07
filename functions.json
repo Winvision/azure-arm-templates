@@ -154,16 +154,24 @@
       "metadata": {
         "description": "Whether to encrypt data in the Storage Account."
       }
+    },
+    "additionalAppSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Additional application settings to add to this App Service."
+      }
     }
   },
   "variables": {
     "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
     "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
-    "consumptionHostingPlanName": "[concat(take(parameters('hostingPlanName'), 47), '-cs')]",
-    "appServiceHostingPlanName": "[concat(take(parameters('hostingPlanName'), 47), '-as')]",
+    "consumptionHostingPlanName": "[concat(parameters('hostingPlanName'), '-cs')]",
+    "appServiceHostingPlanName": "[concat(parameters('hostingPlanName'), '-as')]",
     "actualHostingPlanName": "[if(parameters('isConsumption'), variables('consumptionHostingPlanName'), variables('appServiceHostingPlanName'))]",
-    "storageAccountName": "[concat(take(replace(parameters('storageAccountName'), '-', ''), 22), 'st')]",
-    "appInsightsName": "[concat(take(parameters('appInsightsName'), 47), '-ai')]"
+    "origStorageAccountName": "[replace(parameters('storageAccountName'), '-', '')]",
+    "genStorageAccountName": "[concat(take(variables('origStorageAccountName'), 11), uniqueString(resourceGroup().id, variables('origStorageAccountName')))]",
+    "storageAccountName": "[if(greater(length(variables('origStorageAccountName')), 24), variables('genStorageAccountName'), variables('origStorageAccountName'))]",
+    "appInsightsName": "[parameters('appInsightsName')]"
   },
   "resources": [
     {
@@ -178,40 +186,6 @@
       "properties": {
         "name": "[parameters('name')]",
         "siteConfig": {
-          "appSettings": [
-            {
-              "name": "FUNCTIONS_WORKER_RUNTIME",
-              "value": "[parameters('runtime')]"
-            },
-            {
-              "name": "FUNCTIONS_EXTENSION_VERSION",
-              "value": "~2"
-            },
-            {
-              "name": "WEBSITE_TIME_ZONE",
-              "value": "[parameters('timezone')]"
-            },
-            {
-              "name": "KeyVaultName",
-              "value": "[parameters('keyVaultName')]"
-            },
-            {
-              "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', reference('storage').outputs.accessKey.value)]"
-            },
-            {
-              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', reference('storage').outputs.accessKey.value)]"
-            },
-            {
-              "name": "WEBSITE_CONTENTSHARE",
-              "value": "[parameters('name')]"
-            },
-            {
-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName'))).InstrumentationKey]"
-            }
-          ],
           "alwaysOn": "[parameters('isAlwaysOn')]"
         },
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
@@ -221,6 +195,41 @@
         "storage",
         "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
         "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "appsettings",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('templateBaseUrl'), 'appservice-appsettings.json')]"
+        },
+        "parameters": {
+          "appserviceName": {
+            "value": "[parameters('name')]"
+          },
+          "appSettings": {
+            "value": {
+              "FUNCTIONS_WORKER_RUNTIME": "[parameters('runtime')]",
+              "FUNCTIONS_EXTENSION_VERSION": "~2",
+              "WEBSITE_TIME_ZONE": "[parameters('timezone')]",
+              "KeyVaultName": "[parameters('keyVaultName')]",
+              "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', reference('storage').outputs.accessKey.value)]",
+              "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', reference('storage').outputs.accessKey.value)]",
+              "WEBSITE_CONTENTSHARE": "[parameters('name')]",
+              "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName'))).InstrumentationKey]",
+              "AzureWebJobsFeatureFlags": "EnableActionResultHandling"
+            }
+          },
+          "additionalAppSettings": {
+            "value": "[parameters('additionalAppSettings')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
       ]
     },
     {
@@ -317,7 +326,7 @@
             "value": {
               "secrets": [
                 "get",
-				"list"
+                "list"
               ]
             }
           }
