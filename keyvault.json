@@ -12,7 +12,9 @@
         },
         "secrets": {
             "type": "secureObject",
-            "defaultValue": "{}",
+            "defaultValue": {
+                "secrets": []
+            },
             "metadata": {
                 "description": "The secrets to add to this keyvault, in the format {\"name\":\"\", \"value\":\"\"}, wrapped in a secure object."
             }
@@ -63,16 +65,23 @@
             }
         },
         {
-            "type": "Microsoft.KeyVault/vaults/secrets",
-            "apiVersion": "2016-10-01",
-            "name": "[concat(parameters('name'), '/', parameters('secrets').secrets[copyIndex()].name)]",
+            "condition": "[not(empty(parameters('secrets').secrets))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "secrets",
             "properties": {
-                "contentType": "text/plain",
-                "value": "[parameters('secrets').secrets[copyIndex()].value]"
-            },
-            "copy": {
-                "name": "secretsCopy",
-                "count": "[length(parameters('secrets').secrets)]"
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(variables('templateBaseUrl'), 'keyvault-secrets.json')]"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[parameters('name')]"
+                    },
+                    "secrets": {
+                        "value": "[parameters('secrets')]"
+                    }
+                }
             },
             "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
