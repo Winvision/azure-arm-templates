@@ -214,7 +214,8 @@
       },
       "dependsOn": [
         "storage",
-        "[resourceId(resourceGroup().name, 'Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
+        "[variables('consumptionHostingPlanName')]",
+        "[variables('appServiceHostingPlanName')]",
         "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
       ]
     },
