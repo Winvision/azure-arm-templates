@@ -38,6 +38,13 @@
         "description": "Whether the Function App is always on."
       }
     },
+    "useExistingHostingPlan":{
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Whether to use an existing service plan."
+      }
+    },
     "hostingPlanName": {
       "type": "string",
       "minLength": 3,
@@ -176,7 +183,12 @@
     "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
     "consumptionHostingPlanName": "[concat(parameters('hostingPlanName'), '-cs')]",
     "appServiceHostingPlanName": "[concat(parameters('hostingPlanName'), '-as')]",
-    "actualHostingPlanName": "[if(parameters('isConsumption'), variables('consumptionHostingPlanName'), variables('appServiceHostingPlanName'))]",
+    "actualHostingPlanName": "[
+      if(parameters('useExistingHostingPlan'), 
+        parameters('hostingPlanName'), 
+        if(parameters('isConsumption'), 
+          variables('consumptionHostingPlanName'), 
+          variables('appServiceHostingPlanName')))]",
     "origStorageAccountName": "[replace(parameters('storageAccountName'), '-', '')]",
     "genStorageAccountName": "[concat(take(variables('origStorageAccountName'), 11), uniqueString(resourceGroup().id, variables('origStorageAccountName')))]",
     "storageAccountName": "[if(greater(length(variables('origStorageAccountName')), 24), variables('genStorageAccountName'), variables('origStorageAccountName'))]",
@@ -197,12 +209,12 @@
         "siteConfig": {
           "alwaysOn": "[parameters('isAlwaysOn')]"
         },
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
+        "serverFarmId": "[resourceId(resourceGroup().name, 'Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
         "clientAffinityEnabled": false
       },
       "dependsOn": [
         "storage",
-        "[resourceId('Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
+        "[resourceId(resourceGroup().name, 'Microsoft.Web/serverfarms', variables('actualHostingPlanName'))]",
         "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
       ]
     },
@@ -278,7 +290,7 @@
       }
     },
     {
-      "condition": "[parameters('isConsumption')]",
+      "condition": "[and(parameters('isConsumption'), not(parameters('useExistingHostingPlan')))]",
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
       "name": "[variables('consumptionHostingPlanName')]",
@@ -293,7 +305,7 @@
       }
     },
     {
-      "condition": "[not(parameters('isConsumption'))]",
+      "condition": "[and(not(parameters('isConsumption')), not(parameters('useExistingHostingPlan')))]",
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
       "name": "[variables('appServiceHostingPlanName')]",
