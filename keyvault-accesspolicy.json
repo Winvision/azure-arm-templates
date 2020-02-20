@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Key Vault."
+            }
+        },
+        "tenantId": {
+            "type": "string",
+            "defaultValue": "[subscription().tenantId]",
+            "metadata": {
+                "description": "The tenant of the Key Vault."
+            }
+        },
+        "objectId": {
+            "type": "string",
+            "metadata": {
+                "description": "The object identifier that specifies which users get permissions on this Key Vault."
+            }
+        },
+        "permissions": {
+            "type": "object",
+            "metadata": {
+                "description": "The permissions to give to the users, by default this will make them Administrator."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults/accessPolicies",
+            "apiVersion": "2016-10-01",
+            "name": "[concat(parameters('keyVaultName'), '/add')]",
+            "properties": {
+                "mode": "Incremental",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[parameters('tenantId')]",
+                        "objectId": "[parameters('objectId')]",
+                        "permissions": "[parameters('permissions')]"
+                    }
+                ]
+            }
+        }
+    ]
+}
