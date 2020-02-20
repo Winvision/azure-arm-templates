@@ -67,20 +67,33 @@
             }
         }
     },
+    "variables": {
+        "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/test-array/"
+    },
     "resources": [
         {
-            "type": "Microsoft.KeyVault/vaults/accessPolicies",
-            "apiVersion": "2016-10-01",
-            "name": "[concat(parameters('keyVaultName'), '/add')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "[concat('accesspolicies-', copyIndex())]",
             "properties": {
                 "mode": "Incremental",
-                "accessPolicies": [
-                    {
-                        "tenantId": "[parameters('tenantId')]",
-                        "objectId": "[parameters('objectIds')[copyIndex()]]",
-                        "permissions": "[parameters('permissions')]"
+                "templateLink": {
+                    "uri": "[uri(variables('templateBaseUrl'), 'keyvault-accesspolicy.json')]"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[parameters('keyVaultName')]"
+                    },
+                    "tenantId": {
+                        "value": "[parameters('tenantId')]"
+                    },
+                    "objectId": {
+                        "value": "[parameters('objectIds')[copyIndex()]]"
+                    },
+                    "permissions": {
+                        "value": "[parameters('permissions')]"
                     }
-                ]
+                }
             },
             "copy": {
                 "name": "policiesCopy",
