@@ -71,7 +71,7 @@
         {
             "type": "Microsoft.KeyVault/vaults/accessPolicies",
             "apiVersion": "2016-10-01",
-            "name": "[concat(parameters('keyVaultName'), '/add')]",
+            "name": "[concat(parameters('keyVaultName'), '/add/', copyIndex())]",
             "properties": {
                 "mode": "Incremental",
                 "accessPolicies": [
