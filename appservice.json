@@ -79,6 +79,13 @@
             "metadata": {
                 "description": "The tenant identifier of the subscription."
             }
+        },
+        "additionalObjectIdsForKeyvaultAccess": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "Additional object ids that should be added as access policy to the keyvault."
+            }
         }
     },
     "variables": {
@@ -187,6 +194,41 @@
                         "value": [
                             "[reference(variables('managedIdentity'), '2018-11-30').principalId]"
                         ]
+                    },
+                    "permissions": {
+                        "value": {
+                            "secrets": [
+                                "get",
+                                "list"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('name'))]",
+                "keyvault"
+            ]
+        },
+        {
+            "condition": "[and(not(empty(parameters('keyVaultName'))), parameters('useManagedIdentity'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "additionalaccesspolicies",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(variables('templateBaseUrl'), 'keyvault-accesspolicies.json')]"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[parameters('keyvaultName')]"
+                    },
+                    "tenantId": {
+                        "value": "[parameters('tenantId')]"
+                    },
+                    "objectIds": {
+                        "value": "[parameters('additionalObjectIdsForKeyvaultAccess')]"
                     },
                     "permissions": {
                         "value": {
