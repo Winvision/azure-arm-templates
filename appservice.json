@@ -244,7 +244,8 @@
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', parameters('name'))]",
-                "keyvault"
+                "keyvault",
+                "accesspolicies"
             ]
         },
         {
