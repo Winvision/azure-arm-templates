@@ -173,7 +173,8 @@
                         "value": "[parameters('additionalAppSettings')]"
                     }
                 }
-            }
+            },
+            "dependsOn":["[parameters('name')]"]
         },
         {
             "condition": "[and(not(empty(parameters('keyVaultName'))), parameters('useManagedIdentity'))]",
