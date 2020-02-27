@@ -112,7 +112,9 @@
                             "secrets": "[parameters('keyvaultSecrets')]"
                         }
                     },
-                    "location": "[parameters('location')]"
+                    "location": {
+                        "value": "[parameters('location')]"
+                    } 
                 }
             }
         },
