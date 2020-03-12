@@ -99,8 +99,7 @@
     },
     "variables": {
         "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
-        "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
-        "slotManagedIdentity": "[concat(resourceId('Microsoft.Web/sites/slots', concat(parameters('name'), '/staging')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
+        "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
     },
     "resources": [
         {
@@ -239,7 +238,8 @@
                 }
             },
             "dependsOn": [
-                "[parameters('name')]"
+                "[parameters('name')]", 
+                "staging"
             ]
         },
         {
@@ -298,7 +298,7 @@
                     },
                     "objectIds": {
                         "value": [
-                            "[reference(variables('slotManagedIdentity'), '2018-11-30').principalId]"
+                            "[reference(concat(resourceId('Microsoft.Web/sites/slots', parameters('name'), 'staging'), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]"
                         ]
                     },
                     "permissions": {
@@ -315,7 +315,7 @@
                 "[resourceId('Microsoft.Web/sites', parameters('name'))]",
                 "staging",
                 "keyvault",
-                "accesspolicies"
+                "additionalaccesspolicies"
             ]
         },
         {
