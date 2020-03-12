@@ -172,7 +172,8 @@
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+                "[resourceId('Microsoft.Web/Sites', parameters('name'))]",
+                "appsettings"
             ],
             "copy": {
                 "name": "webPortalSlot",
