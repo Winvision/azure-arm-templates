@@ -238,7 +238,8 @@
                 }
             },
             "dependsOn": [
-                "[parameters('name')]"
+                "[parameters('name')]", 
+                "staging"
             ]
         },
         {
@@ -297,7 +298,7 @@
                     },
                     "objectIds": {
                         "value": [
-                            "[concat(resourceId('Microsoft.Web/sites/slots', parameters('name'), 'staging'), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
+                            "[reference(concat(resourceId('Microsoft.Web/sites/slots', parameters('name'), 'staging'), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]"
                         ]
                     },
                     "permissions": {
