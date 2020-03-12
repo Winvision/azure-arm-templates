@@ -82,9 +82,18 @@
         },
         "additionalObjectIdsForKeyvaultAccess": {
             "type": "array",
-            "defaultValue": [],
+            "defaultValue": [
+            ],
             "metadata": {
                 "description": "Additional object ids that should be added as access policy to the keyvault."
+            }
+        },
+        "useStagingSlot": {
+            "defaultValue": false,
+            "type": "bool",
+            "metadata": {
+                "description": "Whether to use a staging slot. Note this means app settings are only set to the staging slot!
+                It is recommended to then deploy code to staging slot and swap to production afterwards."
             }
         }
     },
@@ -114,7 +123,7 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
-                    } 
+                    }
                 }
             }
         },
@@ -150,9 +159,27 @@
             }
         },
         {
+            "apiVersion": "2016-08-01",
+            "condition": "[parameters('useStagingSlot')]",
+            "type": "Microsoft.Web/sites/slots",
+            "name": "[concat(parameters('name'), '/staging')]",
+            "kind": "app",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "WebAppSlots"
+            },
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+            ]
+        },
+        {
             "type": "Microsoft.Resources/deployments",
+            "condition": "[not(parameters('useStagingSlot'))]",
             "apiVersion": "2018-05-01",
-            "name": "appsettings",
+            "name": "appsettings-webapp",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -174,7 +201,42 @@
                     }
                 }
             },
-            "dependsOn":["[parameters('name')]"]
+            "dependsOn": [
+                "staging"
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "condition": "[parameters('useStagingSlot')]",
+            "apiVersion": "2018-05-01",
+            "name": "appsettings-slot",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(variables('templateBaseUrl'), 'appservice-slot-appsettings.json')]"
+                },
+                "parameters": {
+                    "appserviceName": {
+                        "value": "[parameters('name')]"
+                    },
+                    "appSettings": {
+                        "value": {
+                            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName'))).InstrumentationKey]",
+                            "ApplicationInsights:InstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName'))).InstrumentationKey]",
+                            "KeyVault:Name": "[parameters('keyvaultName')]"
+                        }
+                    },
+                    "additionalAppSettings": {
+                        "value": "[parameters('additionalAppSettings')]"
+                    },
+                    "slotName": {
+                        "value": "staging"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[parameters('name')]"
+            ]
         },
         {
             "condition": "[and(not(empty(parameters('keyVaultName'))), parameters('useManagedIdentity'))]",
