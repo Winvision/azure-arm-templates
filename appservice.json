@@ -298,6 +298,7 @@
                     },
                     "objectIds": {
                         "value": [
+                            "[concat(resourceId('Microsoft.Web/sites/slots', parameters('name'), 'staging'), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
                         ]
                     },
                     "permissions": {
