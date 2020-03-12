@@ -99,7 +99,8 @@
     },
     "variables": {
         "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
-        "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
+        "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
+        "slotManagedIdentity": "[concat(resourceId('Microsoft.Web/sites/slots', concat(parameters('name'), '/staging')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
     },
     "resources": [
         {
@@ -170,6 +171,9 @@
             },
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]"
+            },
+            "identity": {
+                "type": "[if(parameters('useManagedIdentity'), 'SystemAssigned', 'None')]"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
@@ -273,6 +277,45 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', parameters('name'))]",
                 "keyvault"
+            ]
+        },
+        {
+            "condition": "[and(not(empty(parameters('keyVaultName'))), parameters('useManagedIdentity'), parameters('useStagingSlot'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "slotaccesspolicy",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(variables('templateBaseUrl'), 'keyvault-accesspolicies.json')]"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[parameters('keyvaultName')]"
+                    },
+                    "tenantId": {
+                        "value": "[parameters('tenantId')]"
+                    },
+                    "objectIds": {
+                        "value": [
+                            "[reference(variables('slotManagedIdentity'), '2018-11-30').principalId]"
+                        ]
+                    },
+                    "permissions": {
+                        "value": {
+                            "secrets": [
+                                "get",
+                                "list"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('name'))]",
+                "staging",
+                "keyvault",
+                "accesspolicies"
             ]
         },
         {
