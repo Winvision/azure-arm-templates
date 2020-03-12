@@ -100,7 +100,7 @@
     "variables": {
         "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
         "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
-        "slotManagedIdentity": "[concat(resourceId('Microsoft.Web/sites/slots', concat(parameters('name'), '/staging')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
+        "slotManagedIdentity": "[concat(resourceId('Microsoft.Web/sites/slots', concat(parameters('name'), '(staging)')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
     },
     "resources": [
         {
