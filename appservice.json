@@ -298,7 +298,6 @@
                     },
                     "objectIds": {
                         "value": [
-                            "[reference(variables('slotManagedIdentity'), '2018-11-30').principalId]"
                         ]
                     },
                     "permissions": {
