@@ -82,10 +82,20 @@
         },
         "additionalObjectIdsForKeyvaultAccess": {
             "type": "array",
-            "defaultValue": [],
+            "defaultValue": [
+            ],
             "metadata": {
                 "description": "Additional object ids that should be added as access policy to the keyvault."
             }
+        },
+        "deploymentSlots": {
+            "defaultValue": [
+            ],
+            "type": "array",
+            "metadata": {
+                "description": "Array with the names for additional deployment slots"
+            },
+            "maxLength": 19
         }
     },
     "variables": {
@@ -114,7 +124,7 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
-                    } 
+                    }
                 }
             }
         },
@@ -150,6 +160,26 @@
             }
         },
         {
+            "apiVersion": "2016-08-01",
+            "type": "Microsoft.Web/sites/slots",
+            "name": "[concat(parameters('name'), '/', parameters('deploymentSlots')[copyIndex()])]",
+            "kind": "app",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "WebAppSlots"
+            },
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+            ],
+            "copy": {
+                "name": "webPortalSlot",
+                "count": "[length(parameters('deploymentSlots'))]"
+            }
+        },
+        {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "name": "appsettings",
@@ -174,7 +204,9 @@
                     }
                 }
             },
-            "dependsOn":["[parameters('name')]"]
+            "dependsOn": [
+                "[parameters('name')]"
+            ]
         },
         {
             "condition": "[and(not(empty(parameters('keyVaultName'))), parameters('useManagedIdentity'))]",
