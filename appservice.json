@@ -315,7 +315,7 @@
                 "[resourceId('Microsoft.Web/sites', parameters('name'))]",
                 "staging",
                 "keyvault",
-                "accesspolicies"
+                "additionalaccesspolicies"
             ]
         },
         {
