@@ -97,7 +97,9 @@
             },
             "copy": {
                 "name": "policiesCopy",
-                "count": "[length(parameters('objectIds'))]"
+                "count": "[length(parameters('objectIds'))]",
+                "mode": "serial",
+                "batchSize": 1
             }
         }
     ]
