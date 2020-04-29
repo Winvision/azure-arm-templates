@@ -240,9 +240,6 @@
                     "additionalAppSettings": {
                         "value": "[parameters('additionalAppSettings')]"
                     },
-                    "additionalAppSlotSettings": {
-                        "value": "[parameters('additionalAppSlotSettings')]"
-                    },
                     "slotName": {
                         "value": "staging"
                     }

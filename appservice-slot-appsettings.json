@@ -27,14 +27,6 @@
             "metadata": {
                 "description": "Additional application settings to add to this App Service."
             }
-        },
-        "additionalAppSlotSettings": {
-            "type": "object",
-            "defaultValue": [
-            ],
-            "metadata": {
-                "description": "Additional application slot settings to add to this App Service."
-            }
         }
     },
     "resources": [
@@ -42,7 +34,7 @@
             "apiVersion": "2018-11-01",
             "name": "[concat(parameters('appserviceName'), '/', parameters('slotName'), '/appsettings')]",
             "type": "Microsoft.Web/sites/slots/config",
-            "properties": "[union(parameters('appSettings'), parameters('additionalAppSettings')]"
+            "properties": "[union(parameters('appSettings'), parameters('additionalAppSettings'))]"
         }
     ]
 }
