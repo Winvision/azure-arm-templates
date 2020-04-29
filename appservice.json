@@ -187,6 +187,18 @@
             ]
         },
         {
+          "apiVersion": "2016-08-01",
+          "name": "slotconfignames",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+          ],
+          "properties": {
+            "appSettingNames": [ "Client:UseCore", "Client:UseMock" ]
+            //"connectionStringNames": "[ parameters('webApplicationSettings').connectionStrings.stickySettings ]"
+          }
+        },
+        {
             "type": "Microsoft.Resources/deployments",
             "condition": "[not(parameters('useStagingSlot'))]",
             "apiVersion": "2018-05-01",
