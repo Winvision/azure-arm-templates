@@ -27,6 +27,14 @@
             "metadata": {
                 "description": "Additional application settings to add to this App Service."
             }
+        },
+        "additionalAppSlotSettings": {
+            "type": "object",
+            "defaultValue": [
+            ],
+            "metadata": {
+                "description": "Additional application slot settings to add to this App Service."
+            }
         }
     },
     "resources": [
