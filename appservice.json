@@ -100,6 +100,14 @@
             "metadata": {
                 "description": "Whether to use a staging slot. Note this means app settings are only set to the staging slot!"
             }
+        },
+        "stickyStagingSlotSettings": {
+            "type": "array",
+            "defaultValue": [
+            ],
+            "metadata": {
+                "description": "Settings that are sticky to the staging slot. (not swapped to production)"
+            }
         }
     },
     "variables": {
@@ -173,7 +181,7 @@
                         "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
                         ],
                     "properties": {
-                        "appSettingNames": [ "Client:UseCore", "Client:UseMock" ]
+                        "appSettingNames": "[parameters('stickyStagingSlotSettings')]"
                         }
                 }
             ]
