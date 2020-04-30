@@ -29,6 +29,12 @@
                 "description": "Additional application settings to add to this App Service."
             }
         },
+        "additionalAppStagingSlotSettings": {
+            "type": "object",
+            "metadata": {
+                "description": "Additional application slot settings to add to this App Service."
+            }
+        },
         "keyvaultName": {
             "type": "string",
             "defaultValue": "",
@@ -92,8 +98,15 @@
             "defaultValue": false,
             "type": "bool",
             "metadata": {
-                "description": "Whether to use a staging slot. Note this means app settings are only set to the staging slot!
-                It is recommended to then deploy code to staging slot and swap to production afterwards."
+                "description": "Whether to use a staging slot. Note this means app settings are only set to the staging slot!"
+            }
+        },
+        "stickyStagingSlotSettings": {
+            "type": "array",
+            "defaultValue": [
+            ],
+            "metadata": {
+                "description": "Settings that are sticky to the staging slot. (not swapped to production)"
             }
         }
     },
@@ -158,7 +171,20 @@
                 "name": "[parameters('name')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
                 "httpsOnly": true
-            }
+            },
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "slotconfignames",
+                    "type": "config",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+                        ],
+                    "properties": {
+                        "appSettingNames": "[parameters('stickyStagingSlotSettings')]"
+                        }
+                }
+            ]
         },
         {
             "apiVersion": "2016-08-01",
@@ -232,7 +258,7 @@
                         }
                     },
                     "additionalAppSettings": {
-                        "value": "[parameters('additionalAppSettings')]"
+                        "value": "[union(parameters('additionalAppSettings'), parameters('additionalAppStagingSlotSettings'))]"
                     },
                     "slotName": {
                         "value": "staging"
