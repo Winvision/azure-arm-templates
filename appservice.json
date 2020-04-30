@@ -98,8 +98,7 @@
             "defaultValue": false,
             "type": "bool",
             "metadata": {
-                "description": "Whether to use a staging slot. Note this means app settings are only set to the staging slot!
-                It is recommended to then deploy code to staging slot and swap to production afterwards."
+                "description": "Whether to use a staging slot. Note this means app settings are only set to the staging slot!"
             }
         }
     },
@@ -187,7 +186,7 @@
             ]
         },
         {
-          "apiVersion": "2016-08-01",
+          "apiVersion": "2015-08-01",
           "name": "slotconfignames",
           "type": "config",
           "dependsOn": [
@@ -195,7 +194,6 @@
           ],
           "properties": {
             "appSettingNames": [ "Client:UseCore", "Client:UseMock" ]
-            //"connectionStringNames": "[ parameters('webApplicationSettings').connectionStrings.stickySettings ]"
           }
         },
         {
