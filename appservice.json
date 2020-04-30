@@ -165,18 +165,18 @@
                 "httpsOnly": true
             },
             "resources": [
-                            {
-                                "apiVersion": "2015-08-01",
-                                "name": "slotconfignames",
-                                "type": "config",
-                                "dependsOn": [
-                                    "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
-                                    ],
-                                "properties": {
-                                    "appSettingNames": [ "Client:UseCore", "Client:UseMock" ]
-                                    }
-                            }
-                        ]
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "slotconfignames",
+                    "type": "config",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+                        ],
+                    "properties": {
+                        "appSettingNames": [ "Client:UseCore", "Client:UseMock" ]
+                        }
+                }
+            ]
         },
         {
             "apiVersion": "2016-08-01",
