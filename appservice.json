@@ -29,7 +29,7 @@
                 "description": "Additional application settings to add to this App Service."
             }
         },
-        "additionalAppSlotSettings": {
+        "additionalAppStagingSlotSettings": {
             "type": "object",
             "metadata": {
                 "description": "Additional application slot settings to add to this App Service."
@@ -258,7 +258,7 @@
                         }
                     },
                     "additionalAppSettings": {
-                        "value": "[union(parameters('additionalAppSettings'), parameters('additionalAppSlotSettings'))]"
+                        "value": "[union(parameters('additionalAppSettings'), parameters('additionalAppStagingSlotSettings'))]"
                     },
                     "slotName": {
                         "value": "staging"
