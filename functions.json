@@ -164,6 +164,7 @@
     },
     "additionalAppSettings": {
       "type": "object",
+      "defaultValue": [],
       "metadata": {
         "description": "Additional application settings to add to this App Service."
       }
