@@ -25,14 +25,14 @@
         },
         "additionalAppSettings": {
             "type": "object",
-            "defaultValue": [],
+            "defaultValue": {},
             "metadata": {
                 "description": "Additional application settings to add to this App Service."
             }
         },
         "additionalAppStagingSlotSettings": {
             "type": "object",
-            "defaultValue": [],
+            "defaultValue": {},
             "metadata": {
                 "description": "Additional application slot settings to add to this App Service."
             }
