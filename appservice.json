@@ -25,12 +25,14 @@
         },
         "additionalAppSettings": {
             "type": "object",
+            "defaultValue": [],
             "metadata": {
                 "description": "Additional application settings to add to this App Service."
             }
         },
         "additionalAppStagingSlotSettings": {
             "type": "object",
+            "defaultValue": [],
             "metadata": {
                 "description": "Additional application slot settings to add to this App Service."
             }
@@ -44,8 +46,7 @@
         },
         "keyvaultSecrets": {
             "type": "array",
-            "defaultValue": [
-            ]
+            "defaultValue": []
         },
         "location": {
             "type": "string",
@@ -88,8 +89,7 @@
         },
         "additionalObjectIdsForKeyvaultAccess": {
             "type": "array",
-            "defaultValue": [
-            ],
+            "defaultValue": [],
             "metadata": {
                 "description": "Additional object ids that should be added as access policy to the keyvault."
             }
@@ -103,8 +103,7 @@
         },
         "stickyStagingSlotSettings": {
             "type": "array",
-            "defaultValue": [
-            ],
+            "defaultValue": [],
             "metadata": {
                 "description": "Settings that are sticky to the staging slot. (not swapped to production)"
             }
@@ -179,10 +178,10 @@
                     "type": "config",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
-                        ],
+                    ],
                     "properties": {
                         "appSettingNames": "[parameters('stickyStagingSlotSettings')]"
-                        }
+                    }
                 }
             ]
         },
@@ -266,7 +265,7 @@
                 }
             },
             "dependsOn": [
-                "[parameters('name')]", 
+                "[parameters('name')]",
                 "staging"
             ]
         },
