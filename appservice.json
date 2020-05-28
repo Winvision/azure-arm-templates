@@ -206,9 +206,7 @@
             "properties": {
                 "name": "[parameters('name')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
-                "httpsOnly": true,
-                "autoHealEnabled": "[parameters('enableAutoHealOnInternalServerErrors')]",
-                "autoHealRules": "[if(parameters('enableAutoHealOnInternalServerErrors'), variables('autohealRulesObject'), json('null'))]"
+                "httpsOnly": true
             },
             "resources": [
                 {
@@ -219,7 +217,9 @@
                         "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
                     ],
                     "properties": {
-                        "appSettingNames": "[parameters('stickyStagingSlotSettings')]"
+                        "appSettingNames": "[parameters('stickyStagingSlotSettings')]",
+                        "autoHealEnabled": "[parameters('enableAutoHealOnInternalServerErrors')]",
+                        "autoHealRules": "[if(parameters('enableAutoHealOnInternalServerErrors'), variables('autohealRulesObject'), json('null'))]"
                     }
                 }
             ]
