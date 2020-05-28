@@ -217,7 +217,17 @@
                         "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
                     ],
                     "properties": {
-                        "appSettingNames": "[parameters('stickyStagingSlotSettings')]",
+                        "appSettingNames": "[parameters('stickyStagingSlotSettings')]"
+                    }
+                },
+                {
+                    "apiVersion": "2018-11-01",
+                    "name": "web",
+                    "type": "config",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+                    ],
+                    "properties": {
                         "autoHealEnabled": "[parameters('enableAutoHealOnInternalServerErrors')]",
                         "autoHealRules": "[if(parameters('enableAutoHealOnInternalServerErrors'), variables('autohealRulesObject'), json('null'))]"
                     }
