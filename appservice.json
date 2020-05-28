@@ -25,14 +25,16 @@
         },
         "additionalAppSettings": {
             "type": "object",
-            "defaultValue": {},
+            "defaultValue": {
+            },
             "metadata": {
                 "description": "Additional application settings to add to this App Service."
             }
         },
         "additionalAppStagingSlotSettings": {
             "type": "object",
-            "defaultValue": {},
+            "defaultValue": {
+            },
             "metadata": {
                 "description": "Additional application slot settings to add to this App Service."
             }
@@ -46,7 +48,8 @@
         },
         "keyvaultSecrets": {
             "type": "array",
-            "defaultValue": []
+            "defaultValue": [
+            ]
         },
         "location": {
             "type": "string",
@@ -89,7 +92,8 @@
         },
         "additionalObjectIdsForKeyvaultAccess": {
             "type": "array",
-            "defaultValue": [],
+            "defaultValue": [
+            ],
             "metadata": {
                 "description": "Additional object ids that should be added as access policy to the keyvault."
             }
@@ -103,9 +107,24 @@
         },
         "stickyStagingSlotSettings": {
             "type": "array",
-            "defaultValue": [],
+            "defaultValue": [
+            ],
             "metadata": {
                 "description": "Settings that are sticky to the staging slot. (not swapped to production)"
+            }
+        },
+        "enableAutoHealOnInternalServerErrors": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Whether to enable an autoheal rule that restarts the app service if a certain number of internal server errors is detected!"
+            }
+        },
+        "autoHealErrorThreshold": {
+            "type": "int",
+            "defaultValue": 10,
+            "metadata": {
+                "description": "The number of internal server errors within 1 minute to trigger a restart!"
             }
         }
     },
@@ -113,7 +132,25 @@
         "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
         "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
         "slotManagedIdentity": "[concat(variables('slotManagedIdentityResourceIdBugWorkaround'), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
-        "slotManagedIdentityResourceIdBugWorkaround": "[if(parameters('useStagingSlot'), resourceId('Microsoft.Web/sites/slots', parameters('name'), 'staging'), resourceId('Microsoft.Web/sites', parameters('name')))]"
+        "slotManagedIdentityResourceIdBugWorkaround": "[if(parameters('useStagingSlot'), resourceId('Microsoft.Web/sites/slots', parameters('name'), 'staging'), resourceId('Microsoft.Web/sites', parameters('name')))]",
+        "autohealRulesObject": {
+            "triggers": {
+                "privateBytesInKB": 0,
+                "statusCodes": [
+                    {
+                        "status": 500,
+                        "subStatus": 0,
+                        "win32Status": 0,
+                        "count": "[parameters('autoHealErrorThreshold')]",
+                        "timeInterval": "00:01:00"
+                    }
+                ]
+            },
+            "actions": {
+                "actionType": "Recycle",
+                "minProcessExecutionTime": "00:10:00"
+            }
+        }
     },
     "resources": [
         {
@@ -169,7 +206,9 @@
             "properties": {
                 "name": "[parameters('name')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
-                "httpsOnly": true
+                "httpsOnly": true,
+                "autoHealEnabled": "[parameters('enableAutoHealOnInternalServerErrors')]",
+                "autoHealRules": "[if(parameters('enableAutoHealOnInternalServerErrors'), variables('autohealRulesObject'), json('null'))]"
             },
             "resources": [
                 {
