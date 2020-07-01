@@ -214,7 +214,8 @@
                     "name": "slotconfignames",
                     "type": "config",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+                        "[resourceId('Microsoft.Web/Sites', parameters('name'))]",
+                        "accesspolicies"
                     ],
                     "properties": {
                         "appSettingNames": "[parameters('stickyStagingSlotSettings')]"
@@ -225,7 +226,8 @@
                     "name": "web",
                     "type": "config",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+                        "[resourceId('Microsoft.Web/Sites', parameters('name'))]",
+                        "accesspolicies"
                     ],
                     "properties": {
                         "autoHealEnabled": "[parameters('enableAutoHealOnInternalServerErrors')]",
@@ -316,7 +318,8 @@
             },
             "dependsOn": [
                 "[parameters('name')]",
-                "staging"
+                "staging",
+                "accesspolicies"
             ]
         },
         {
