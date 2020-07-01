@@ -281,7 +281,8 @@
                 }
             },
             "dependsOn": [
-                "staging"
+                "staging",
+                "accesspolicies"
             ]
         },
         {
