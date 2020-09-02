@@ -462,6 +462,13 @@
             "metadata": {
                 "comments": "Returns the Principal Identifier of the Managed Identity created for the App Service."
             }
+        },
+        "insightsInstrumentationKey": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName'))).InstrumentationKey]",
+            "metadata": {
+                "comments": "Returns the instrumentation key of the application insights resource created (and linked to the app service)."
+            }
         }
     }
 }
