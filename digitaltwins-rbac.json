@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the resource to assign a role to."
+            }
+        },
+        "principalId": {
+            "type": "string",
+            "metadata": {
+                "description": "The principal ID to assign the role to."
+            }
+        },
+        "roleDefinition": {
+            "type": "string",
+            "allowedValues": [
+                "owner",
+                "reader"
+            ],
+            "metadata": {
+                "description": "The definition of the role to assign."
+            }
+        },
+        "principalType": {
+            "type": "string",
+            "allowedValues": [
+                "Group",
+                "ServicePrincipal"
+            ],
+            "metadata": {
+                "description": "The type of the role to assign."
+            }
+        },
+        "digitalTwinsInstanceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Digital Twins instance to assign the roles to."
+            }
+        }
+    },
+    "variables": {
+        "roleGuid": "[if(equals(parameters('roleDefinition'), 'owner'), 'bcd981a7-7f74-457b-83e1-cceb9e632ffe', 'd57506d4-4c8d-48b1-8587-93c323f6a5a3')]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('digitalTwinsInstanceName'), '/Microsoft.Authorization/', guid(resourceGroup().id, parameters('name')))]",
+            "type": "Microsoft.DigitalTwins/digitalTwinsInstances/providers/roleAssignments",
+            "apiVersion": "2020-04-01-preview",
+            "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleGuid'))]",
+                "principalId": "[parameters('principalId')]",
+                "principalType": "[parameters('principalType')]",
+                "scope": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers', '/Microsoft.DigitalTwins', '/digitalTwinsInstances/', parameters('digitalTwinsInstanceName'))]"
+            }
+        }
+    ]
+}
