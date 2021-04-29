@@ -206,7 +206,10 @@
             "properties": {
                 "name": "[parameters('name')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
-                "httpsOnly": true
+                "httpsOnly": true,
+                "siteConfig": {
+                    "alwaysOn": true
+                }
             },
             "resources": [
                 {
