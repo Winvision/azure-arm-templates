@@ -136,7 +136,7 @@
         }
     },
     "variables": {
-        "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/roel/add-alwayson-for-apps/",
+        "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
         "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
         "slotManagedIdentity": "[concat(variables('slotManagedIdentityResourceIdBugWorkaround'), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
         "slotManagedIdentityResourceIdBugWorkaround": "[if(parameters('useStagingSlot'), resourceId('Microsoft.Web/sites/slots', parameters('name'), 'staging'), resourceId('Microsoft.Web/sites', parameters('name')))]",
