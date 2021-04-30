@@ -126,10 +126,17 @@
             "metadata": {
                 "description": "The number of internal server errors within 1 minute to trigger a restart!"
             }
+        },
+        "isAlwaysOn": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Whether the App Service is always on."
+            }      
         }
     },
     "variables": {
-        "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/master/",
+        "templateBaseUrl": "https://raw.githubusercontent.com/Winvision/azure-arm-templates/roel/add-alwayson-for-apps/",
         "managedIdentity": "[concat(resourceId('Microsoft.Web/sites', parameters('name')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
         "slotManagedIdentity": "[concat(variables('slotManagedIdentityResourceIdBugWorkaround'), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
         "slotManagedIdentityResourceIdBugWorkaround": "[if(parameters('useStagingSlot'), resourceId('Microsoft.Web/sites/slots', parameters('name'), 'staging'), resourceId('Microsoft.Web/sites', parameters('name')))]",
@@ -208,7 +215,7 @@
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
                 "httpsOnly": true,
                 "siteConfig": {
-                    "alwaysOn": true
+                    "alwaysOn": "[parameters('isAlwaysOn')]"
                 }
             },
             "resources": [
@@ -252,7 +259,7 @@
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
                 "siteConfig": {
-                    "alwaysOn": true
+                    "alwaysOn": "[parameters('isAlwaysOn')]"
                 }
             },
             "identity": {
