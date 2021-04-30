@@ -126,6 +126,13 @@
             "metadata": {
                 "description": "The number of internal server errors within 1 minute to trigger a restart!"
             }
+        },
+        "isAlwaysOn": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Whether the App Service is always on."
+            }      
         }
     },
     "variables": {
@@ -206,7 +213,10 @@
             "properties": {
                 "name": "[parameters('name')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
-                "httpsOnly": true
+                "httpsOnly": true,
+                "siteConfig": {
+                    "alwaysOn": "[parameters('isAlwaysOn')]"
+                }
             },
             "resources": [
                 {
@@ -247,7 +257,10 @@
                 "displayName": "WebAppSlots"
             },
             "properties": {
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]"
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
+                "siteConfig": {
+                    "alwaysOn": "[parameters('isAlwaysOn')]"
+                }
             },
             "identity": {
                 "type": "[if(parameters('useManagedIdentity'), 'SystemAssigned', 'None')]"
