@@ -19,6 +19,13 @@
                 "P3V2"
             ]
         },
+        "appServiceSkuCapacity":{
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The starting capacity (instances) for the service plan."
+            }
+        },
         "hostingPlanWorkerCount": {
             "type": "string",
             "defaultValue": "1",
@@ -194,7 +201,8 @@
             "location": "[parameters('location')]",
             "apiVersion": "2015-08-01",
             "sku": {
-                "name": "[parameters('appServiceSkuName')]"
+                "name": "[parameters('appServiceSkuName')]",
+                "capacity": "[parameters('appServiceSkuCapacity')]"
             },
             "properties": {
                 "name": "[parameters('servicePlanName')]",
